@@ -19,9 +19,6 @@
 ![Personal Access Token](images/token.png)
 
 
-## Generate GitHub token (Prerequisite)
-![Personal Access Token](images/token.png)
-
 ## Create new Gist
 * manually via GitHub GUI
 * using `gistcc` directly (provides back Gist ID - needed for the following command execution)
@@ -30,6 +27,8 @@ juraj@home:/tmp/gistcc$ python3 gistcc.py --new test --token CHANGE_ME
 Your new Gist Name is: test
 Your new Gist ID is: 123456789123456789123456789
 Ready to run: $gistcc.py --name test --id 123456789123456789123456789 --token CHANGE_ME
+
+#### New Gist has been created
 ```
 
 ![New Gist created](images/newgist.png)
@@ -40,7 +39,17 @@ Ready to run: $gistcc.py --name test --id 123456789123456789123456789 --token CH
 juraj@home:/tmp/gistcc$ python3 gistcc.py --name test --id 123456789123456789123456789 --token CHANGEME
 ```
 ...and now manage the remote machine via Gist edits
+  
+#### Workflow
+* First line in Gist starting with exclamation mark (`!`) is interpreted as command.
+* Command is executed on the remote machine.
+* Command output is uploaded back to Gist and exclamation marks are converted to comment signs (`#`) to cleanup.
+
+![New Gist created](images/gist.png)
+
+* Gist Revisions can be used to store command history execution,
+
+![New Gist created](images/revisions.png)
 
 
-After All exclamation marks are switched to comment sign (hashtag) to start next round in clean setup.
 
