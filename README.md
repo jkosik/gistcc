@@ -1,6 +1,6 @@
 ## About gistcc:
 * Gist/Git-commanded Bot 
-* `gistcc` parses selected Gist @github, identifies commands and executes them locally.
+* `gistcc` parses selected Gist @github, identifies commands and executes them on remote machine (e.g. Bot).
 * Command output is stored back on Gist to provide console look&feel.
 
 
@@ -29,26 +29,61 @@ Your new Gist ID is: 123456789123456789123456789
 Ready to run: $gistcc.py --name test --id 123456789123456789123456789 --token CHANGE_ME
 ```
 
-#### New Gist has been created
+### New Gist has been created
 
 ![New Gist created](images/newgist.png)
 
 
-## Start Bot on remote machine
+## Start Bot on the remote machine
 ```
 juraj@home:/tmp/gistcc$ python3 gistcc.py --name test --id 123456789123456789123456789 --token CHANGEME
 ```
 ...and now manage the remote machine via Gist edits
   
-#### Workflow
-* First line in Gist starting with exclamation mark (`!`) is interpreted as command.
-* Command is executed on the remote machine.
-* Command output is uploaded back to Gist and exclamation marks are converted to comment signs (`#`) to cleanup.
+### Workflow
+1. First line in Gist starting with exclamation mark (`!`) is interpreted as command.
+2. Command is executed on the remote machine.
+3. Command output is uploaded back to Gist and exclamation marks are converted to comment signs (`#`) to cleanup.
+4. Gist Revisions can be used to store command history execution,
 
-![New Gist created](images/gist.png)
+#### 1. Command is sent
+![Command sent](images/cmd.png)
 
-* Gist Revisions can be used to store command history execution,
+#### 2. Command is executed on the remote machine
+```
+juraj@home:/tmp/gistcc$ python3 gistcc.py --name test --id 123456789123456789123456789 --token CHANGE_ME
+NO new command found @Gist
+NO new command found @Gist
+New command found @Gist: uname
+Subprocess executed
 
+Linux
+Command output uploaded...Check Gist.
+
+NO new command found @Gist
+NO new command found @Gist
+New command found @Gist: ls
+Subprocess executed
+
+gistcc.py
+README.md
+Command output uploaded...Check Gist.
+
+NO new command found @Gist
+NO new command found @Gist
+NO new command found @Gist
+New command found @Gist: whoami
+Subprocess executed
+
+juraj
+Command output uploaded...Check Gist.
+```
+
+#### 3. Command output is uploaded back to Gist
+
+![Response from Bot](images/gist.png)
+
+#### 4. Gist revisions provide command output history
 ![New Gist created](images/revisions.png)
 
 
